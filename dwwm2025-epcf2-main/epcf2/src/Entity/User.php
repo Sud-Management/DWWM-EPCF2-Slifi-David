@@ -95,7 +95,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-
     public function getDateInscription(): ?\DateTimeInterface
     {
         return $this->dateInscription;
@@ -161,17 +160,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    
+    public function setRole(string $role): static
+    {
+        $this->role = $role;
+        return $this;
+    }
 
-
+    
     public function getRoles(): array
     {
-        
         return [$this->role ?? 'ROLE_USER'];
     }
 
     public function getUserIdentifier(): string
     {
-        return $this->email;
+        return $this->email ?? '';
     }
 
     public function getPassword(): ?string
