@@ -20,7 +20,7 @@ class UserFixtures extends Fixture
             $user = new User();
             $user->setNom($faker->lastName());
             $user->setPrenom($faker->firstName());
-            $user->setEmail("user$i@example.com");
+            $user->setEmail($faker->email());
             $user->setRole('ROLE_USER');
             $user->setDateInscription(new \DateTime());
             $user->setMotDePasse($this->passwordHasher->hashPassword($user, 'password'));

@@ -22,7 +22,7 @@ class ParticipationFixtures extends Fixture implements DependentFixtureInterface
             $participation
                 ->setStatut($faker->randomElement($statuts))
                 ->setDateParticipation($faker->dateTimeBetween('-2 months', 'now'))
-                ->setUtilisateur($this->getReference('user_' . $faker->numberBetween(1, 9), User::class))
+                ->setUtilisateur($this->getReference('user_' . $i, User::class))
                 ->setEvenement($this->getReference('evenement_' . $faker->numberBetween(1, 5), Evenement::class));
 
             $manager->persist($participation);
