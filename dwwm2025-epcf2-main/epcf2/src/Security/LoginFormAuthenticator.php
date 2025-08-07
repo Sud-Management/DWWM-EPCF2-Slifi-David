@@ -48,7 +48,6 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             return new \Symfony\Component\HttpFoundation\RedirectResponse($targetPath);
         }
 
-        // Redirection selon le rôle
         $roles = $token->getUser()->getRoles();
         if (in_array('ROLE_ADMIN', $roles)) {
             return new \Symfony\Component\HttpFoundation\RedirectResponse($this->urlGenerator->generate('admin_dashboard'));

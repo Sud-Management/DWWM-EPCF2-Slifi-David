@@ -29,12 +29,12 @@ class EvenementVoter extends Voter
         /** @var Evenement $evenement */
         $evenement = $subject;
 
-        // Si l'utilisateur est admin → OK
+        
         if (in_array('ROLE_ADMIN', $user->getRoles())) {
             return true;
         }
 
-        // Sinon, vérifier l'auteur (organisateur)
+        
         return match ($attribute) {
             self::EDIT, self::DELETE => $evenement->getOrganisateur() === $user,
             default => false,

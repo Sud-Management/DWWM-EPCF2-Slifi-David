@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail de l'Événement{% endblock %}
+
+{% block body %}
+    <h1>{{ evenement.titre }}</h1>
+
+    <p><strong>Description :</strong> {{ evenement.description }}</p>
+    <p><strong>Date de début :</strong> {{ evenement.dateDebut ? evenement.dateDebut|date('d/m/Y H:i') : 'Non défini' }}</p>
+    <p><strong>Date de fin :</strong> {{ evenement.dateFin ? evenement.dateFin|date('d/m/Y H:i') : 'Non défini' }}</p>
+    <p><strong>Capacité :</strong> {{ evenement.capacite }}</p>
+    <p><strong>Catégorie :</strong> {{ evenement.categorie.nom ?? 'Aucune' }}</p>
+    <p><strong>Lieu :</strong> {{ evenement.lieu.nom ?? 'Aucun' }}</p>
+    <p><strong>Public ?</strong> {{ evenement.estPublic ? 'Oui' : 'Non' }}</p>
+    <p><strong>Créé le :</strong> {{ evenement.dateCreation ? evenement.dateCreation|date('d/m/Y H:i') : 'Non défini' }}</p>
+
+    <a href="{{ path('evenement_index') }}">Retour à la liste</a>
+{% endblock %}

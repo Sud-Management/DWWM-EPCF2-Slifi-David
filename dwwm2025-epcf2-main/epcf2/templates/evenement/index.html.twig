@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des événements{% endblock %}
+
+{% block body %}
+    <h1>Événements disponibles</h1>
+
+    {% if evenements is empty %}
+        <p>Aucun événement pour le moment.</p>
+    {% else %}
+        <div class="event-list">
+            {% for evenement in evenements %}
+                <div class="event-card">
+                    <h2>{{ evenement.titre }}</h2>
+                    <p><strong>Date :</strong> du {{ evenement.dateDebut|date('d/m/Y H:i') }} au {{ evenement.dateFin|date('d/m/Y H:i') }}</p>
+                    <p><strong>Lieu :</strong> {{ evenement.lieu.nom ?? 'Non précisé' }}</p>
+                    <p><strong>Catégorie :</strong> {{ evenement.categorie.nom ?? 'Aucune' }}</p>
+                    <p>{{ evenement.description|u.truncate(150, '...') }}</p>
+                    <a href="{{ path('evenement_show', {'id': evenement.id}) }}" class="btn btn-primary">Voir l'événement</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
