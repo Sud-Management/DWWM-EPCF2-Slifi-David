@@ -58,7 +58,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             return new \Symfony\Component\HttpFoundation\RedirectResponse($this->urlGenerator->generate('orga_dashboard'));
         }
 
-        return new \Symfony\Component\HttpFoundation\RedirectResponse($this->urlGenerator->generate('app_home'));
+        return new \Symfony\Component\HttpFoundation\RedirectResponse($this->urlGenerator->generate('app_profile'));
     }
 
     protected function getLoginUrl(Request $request): string

@@ -20,7 +20,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     #[ORM\Column]
-    private ?string $motDePasse = null;
+    private ?string $password = null;
 
     #[ORM\Column(length: 50)]
     private ?string $nom = null;
@@ -28,11 +28,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50)]
     private ?string $prenom = null;
 
-    #[ORM\Column(length: 20)]
-    private ?string $role = null;
-
     #[ORM\Column(type: "datetime")]
     private ?\DateTimeInterface $dateInscription = null;
+
+    #[ORM\Column(type: "json")]
+    private array $roles = [];
 
     #[ORM\OneToMany(mappedBy: 'organisateur', targetEntity: Evenement::class)]
     private Collection $evenementsOrganises;
@@ -59,17 +59,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
-        return $this;
-    }
-
-    public function getMotDePasse(): ?string
-    {
-        return $this->motDePasse;
-    }
-
-    public function setMotDePasse(string $motDePasse): static
-    {
-        $this->motDePasse = $motDePasse;
         return $this;
     }
 
@@ -104,6 +93,43 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->dateInscription = $date;
         return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // assure que chaque utilisateur a au moins ROLE_USER
+        if (!in_array('ROLE_USER', $roles, true)) {
+            $roles[] = 'ROLE_USER';
+        }
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+        return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email ?? '';
+    }
+
+    public function eraseCredentials(): void
+    {
+        // Tu peux effacer ici les données temporaires sensibles
     }
 
     /**
@@ -158,33 +184,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             }
         }
         return $this;
-    }
-
-    
-    public function setRole(string $role): static
-    {
-        $this->role = $role;
-        return $this;
-    }
-
-    
-    public function getRoles(): array
-    {
-        return [$this->role ?? 'ROLE_USER'];
-    }
-
-    public function getUserIdentifier(): string
-    {
-        return $this->email ?? '';
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->motDePasse;
-    }
-
-    public function eraseCredentials(): void
-    {
-        
     }
 }
