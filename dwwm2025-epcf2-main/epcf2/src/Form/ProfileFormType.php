@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Form;
 
 use App\Entity\User;
@@ -16,13 +17,13 @@ class ProfileFormType extends AbstractType
         $builder
             ->add('prenom', TextType::class)
             ->add('nom', TextType::class)
-            ->add('email', null)
+            ->add('email')
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'required' => false,
+                'mapped' => false,
                 'first_options'  => ['label' => 'Nouveau mot de passe'],
                 'second_options' => ['label' => 'Confirmation du mot de passe'],
-                'mapped' => false,
             ]);
     }
 

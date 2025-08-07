@@ -1,26 +1,31 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\ProfileFormType;
-use App\Form\ProfileType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class ProfileController extends AbstractController
 {
-    #[Route('/profile/{id}/edit', name: 'app_profile_edit')]
-    #[IsGranted('PROFILE_EDIT', subject: 'user')]
+    #[Route('/profile/edit', name: 'app_profile_edit')]
     public function edit(
-        User $user,
         Request $request,
         EntityManagerInterface $em,
         UserPasswordHasherInterface $passwordHasher
     ) {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw new AccessDeniedException('Vous devez être connecté pour accéder à cette page.');
+        }
+
         $form = $this->createForm(ProfileFormType::class, $user);
         $form->handleRequest($request);
 
@@ -34,7 +39,7 @@ class ProfileController extends AbstractController
             $em->flush();
             $this->addFlash('success', 'Profil mis à jour !');
 
-            return $this->redirectToRoute('app_profile_edit', ['id' => $user->getId()]);
+            return $this->redirectToRoute('app_profile_edit');
         }
 
         return $this->render('profile/edit.html.twig', [
