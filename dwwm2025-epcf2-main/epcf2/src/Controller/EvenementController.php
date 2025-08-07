@@ -58,4 +58,45 @@ class EvenementController extends AbstractController
             'evenements' => $evenements,
         ]);
     }
+
+    
+
+    #[Route('/evenement/{id}/edit', name: 'evenement_edit')]
+    public function edit(Request $request, Evenement $evenement, EntityManagerInterface $em): Response
+    {
+    
+        if ($this->getUser() !== $evenement->getOrganisateur() && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('acces nonn autoriser');
+        }
+
+        $form = $this->createForm(EvenementType::class, $evenement);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            $this->addFlash('success', 'Événement modifier');
+            return $this->redirectToRoute('evenement_show', ['id' => $evenement->getId()]);
+        }
+
+        return $this->render('evenement/edit.html.twig', [
+            'form' => $form->createView(),
+            'evenement' => $evenement,
+        ]);
+    }
+    #[Route('/evenement/{id}/delete', name: 'evenement_delete', methods: ['POST'])]
+    public function delete(Request $request, Evenement $evenement, EntityManagerInterface $em): Response
+    {
+        if ($this->getUser() !== $evenement->getOrganisateur() && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Accès refusé.');
+        }
+
+        if ($this->isCsrfTokenValid('delete'.$evenement->getId(), $request->request->get('_token'))) {
+            $em->remove($evenement);
+            $em->flush();
+            $this->addFlash('success', 'Événement supprimé.');
+        }
+
+        return $this->redirectToRoute('evenement_index');
+    }
+
 }

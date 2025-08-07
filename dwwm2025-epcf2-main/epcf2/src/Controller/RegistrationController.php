@@ -30,7 +30,7 @@ class RegistrationController extends AbstractController
             $em->persist($user);
             $em->flush();
 
-            return $this->redirectToRoute('app_profile');
+            return $this->redirectToRoute('app_profile_edit');
         }
 
         return $this->render('registration.html.twig', [

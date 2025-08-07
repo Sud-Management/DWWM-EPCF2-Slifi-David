@@ -3,20 +3,30 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <h1 class="text-center">Bienvenue sur EventHub 🎉</h1>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                <li><a href="{{ path('evenement_index') }}">Événements</a></li>
 
-        {% if app.user %}
-            <p class="text-center">Bonjour {{ app.user.prenom }} {{ app.user.nom }} 👋</p>
-            <div class="text-center">
-                <a href="{{ path('app_profile_edit', {'id': app.user.id}) }}" class="btn btn-primary">Mon Profil</a>
-            </div>
-        {% else %}
-            <p class="text-center">Connectez-vous ou inscrivez-vous pour découvrir et créer des événements !</p>
-            <div class="text-center">
-                <a href="{{ path('app_login') }}" class="btn btn-success me-2">Connexion</a>
-                <a href="{{ path('app_register') }}" class="btn btn-outline-primary">Inscription</a>
-            </div>
-        {% endif %}
-    </div>
+                {% if app.user %}
+                    <li><a href="{{ path('app_profile') }}">Mon profil</a></li>
+
+                    {% if 'ROLE_ADMIN' in app.user.roles or 'ROLE_ORGA' in app.user.roles %}
+                        <li><a href="{{ path('evenement_new') }}">Créer un événement</a></li>
+                    {% endif %}
+
+                    <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
+                {% else %}
+                    <li><a href="{{ path('app_login') }}">Connexion</a></li>
+                    <li><a href="{{ path('app_register') }}">Inscription</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Bienvenue sur la plateforme d'événements 🎉</h1>
+        <p>Consultez les événements à venir ou connectez-vous pour y participer !</p>
+    </main>
 {% endblock %}
