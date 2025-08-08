@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -12,16 +11,18 @@ class Media
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $cheminFichier = null;
+    
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $url = null;
 
-    #[ORM\Column(length: 20)]
+    #[ORM\Column(length: 20, nullable: true)]
     private ?string $type = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Evenement::class, inversedBy: 'medias')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?Evenement $evenement = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Lieu::class)]
     private ?Lieu $lieu = null;
 
     public function getId(): ?int
@@ -29,14 +30,14 @@ class Media
         return $this->id;
     }
 
-    public function getCheminFichier(): ?string
+    public function getUrl(): ?string
     {
-        return $this->cheminFichier;
+        return $this->url;
     }
 
-    public function setCheminFichier(string $chemin): static
+    public function setUrl(?string $url): static
     {
-        $this->cheminFichier = $chemin;
+        $this->url = $url;
         return $this;
     }
 
@@ -45,7 +46,7 @@ class Media
         return $this->type;
     }
 
-    public function setType(string $type): static
+    public function setType(?string $type): static
     {
         $this->type = $type;
         return $this;

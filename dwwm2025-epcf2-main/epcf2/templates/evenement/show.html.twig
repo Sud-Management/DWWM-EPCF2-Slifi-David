@@ -1,29 +1,83 @@
-{% extends 'base.html.twig' %}
+{# templates/evenement/show.html.twig #}
 
-{% block title %}{{ evenement.titre }}{% endblock %}
-
-{% block body %}
 <h1>{{ evenement.titre }}</h1>
 
-<p><strong>Description :</strong> {{ evenement.description }}</p>
-<p><strong>Date de début :</strong> {{ evenement.dateDebut ? evenement.dateDebut|date('d/m/Y H:i') : 'Non défini' }}</p>
-<p><strong>Date de fin :</strong> {{ evenement.dateFin ? evenement.dateFin|date('d/m/Y H:i') : 'Non défini' }}</p>
-<p><strong>Capacité :</strong> {{ evenement.capacite }}</p>
-<p><strong>Catégorie :</strong> {{ evenement.categorie ? evenement.categorie.nom : 'Aucune' }}</p>
-<p><strong>Lieu :</strong> {{ evenement.lieu ? evenement.lieu.nom : 'Aucun' }}</p>
-<p><strong>Public :</strong> {{ evenement.estPublic ? 'Oui' : 'Non' }}</p>
-<p><strong>Créé le :</strong> {{ evenement.dateCreation ? evenement.dateCreation|date('d/m/Y H:i') : 'Non défini' }}</p>
+<p>{{ evenement.description }}</p>
 
-<a href="{{ path('evenement_index') }}" class="btn btn-secondary">Retour à la liste</a>
+<h2>Participants</h2>
 
-{% if is_granted('EVENEMENT_EDIT', evenement) %}
-    <a href="{{ path('evenement_edit', {'id': evenement.id}) }}" class="btn btn-warning">Modifier</a>
+{# templates/evenement/show.html.twig #}
+
+<h1>{{ evenement.titre }}</h1>
+
+<p>{{ evenement.description }}</p>
+
+<h2>Médias</h2>
+{% if evenement.medias|length > 0 %}
+    <div class="medias">
+        {% for media in evenement.medias %}
+            {% if media.url %}
+                <div style="display:inline-block; margin:6px;">
+                    <img src="{{ media.url }}" alt="Média" style="max-width:300px; display:block;">
+                    {% if media.type %}<small>{{ media.type }}</small>{% endif %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% else %}
+    <p>Aucun média associé.</p>
 {% endif %}
 
-{% if is_granted('EVENEMENT_DELETE', evenement) %}
-    <form method="post" action="{{ path('evenement_delete', {'id': evenement.id}) }}" style="display:inline;" onsubmit="return confirm('Confirmer la suppression ?');">
-        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ evenement.id) }}">
-        <button class="btn btn-danger">Supprimer</button>
-    </form>
+<h2>Participants</h2>
+
+
+
+
+
+{% if evenement.participations is empty %}
+    <p>Aucun participant pour le moment.</p>
+{% else %}
+    <ul>
+        {% for participation in evenement.participations %}
+            <li>
+                {{ participation.utilisateur.prenom }} {{ participation.utilisateur.nom }} -
+                Statut : {{ participation.statut|capitalize }}
+
+                {% if app.user and (app.user == evenement.organisateur or is_granted('ROLE_ADMIN')) and participation.statut == 'en attente' %}
+                    <form method="post" action="{{ path('participation_accepter', {id: participation.id}) }}" style="display:inline">
+                        <button type="submit">Accepter</button>
+                    </form>
+                    <form method="post" action="{{ path('participation_refuser', {id: participation.id}) }}" style="display:inline">
+                        <button type="submit">Refuser</button>
+                    </form>
+                {% endif %}
+
+                {% if app.user and app.user == participation.utilisateur and participation.statut != 'annulee' %}
+                    <form method="post" action="{{ path('participation_annuler', {id: participation.id}) }}" style="display:inline">
+                        <button type="submit">Annuler</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
 {% endif %}
-{% endblock %}
+
+
+{% if app.user %}
+    {% set userParticipation = null %}
+    {% for participation in evenement.participations %}
+        {% if participation.utilisateur == app.user %}
+            {% set userParticipation = participation %}
+        {% endif %}
+    {% endfor %}
+
+    {% if userParticipation is null %}
+        <form method="post" action="{{ path('participation_demande', {id: evenement.id}) }}">
+            <button type="submit">Demander à participer</button>
+        </form>
+    {% else %}
+        <p>Votre participation a bien etait enregistrée : <strong>{{ userParticipation.statut|capitalize }}</strong>.</p>
+    {% endif %}
+{% else %}
+    <p><a href="{{ path('app_login') }}">Connectez-vous</a> pour participer.</p>
+{% endif %}
