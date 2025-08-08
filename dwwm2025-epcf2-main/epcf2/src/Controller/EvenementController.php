@@ -13,9 +13,21 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class EvenementController extends AbstractController
 {
+    #[Route('/evenement', name: 'evenement_index')]
+    public function index(EvenementRepository $evenementRepository): Response
+    {
+        $evenements = $evenementRepository->findAll();
+
+        return $this->render('evenement/index.html.twig', [
+            'evenements' => $evenements,
+        ]);
+    }
+
     #[Route('/evenement/new', name: 'evenement_new')]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
+        $this->denyAccessUnlessGranted('EVENEMENT_CREATE');
+
         $evenement = new Evenement();
         $form = $this->createForm(EvenementType::class, $evenement);
 
@@ -43,38 +55,22 @@ class EvenementController extends AbstractController
     #[Route('/evenement/{id}', name: 'evenement_show', requirements: ['id' => '\d+'])]
     public function show(Evenement $evenement): Response
     {
-
         return $this->render('evenement/show.html.twig', [
             'evenement' => $evenement,
         ]);
     }
 
-    #[Route('/evenement', name: 'evenement_index')]
-    public function index(EvenementRepository $evenementRepository): Response
-    {
-        $evenements = $evenementRepository->findAll();
-
-        return $this->render('evenement/index.html.twig', [
-            'evenements' => $evenements,
-        ]);
-    }
-
-    
-
     #[Route('/evenement/{id}/edit', name: 'evenement_edit')]
     public function edit(Request $request, Evenement $evenement, EntityManagerInterface $em): Response
     {
-    
-        if ($this->getUser() !== $evenement->getOrganisateur() && !$this->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('acces nonn autoriser');
-        }
+        $this->denyAccessUnlessGranted('EVENEMENT_EDIT', $evenement);
 
         $form = $this->createForm(EvenementType::class, $evenement);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
-            $this->addFlash('success', 'Événement modifier');
+            $this->addFlash('success', 'Événement modifié');
             return $this->redirectToRoute('evenement_show', ['id' => $evenement->getId()]);
         }
 
@@ -83,14 +79,13 @@ class EvenementController extends AbstractController
             'evenement' => $evenement,
         ]);
     }
+
     #[Route('/evenement/{id}/delete', name: 'evenement_delete', methods: ['POST'])]
     public function delete(Request $request, Evenement $evenement, EntityManagerInterface $em): Response
     {
-        if ($this->getUser() !== $evenement->getOrganisateur() && !$this->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('Accès refusé.');
-        }
+        $this->denyAccessUnlessGranted('EVENEMENT_DELETE', $evenement);
 
-        if ($this->isCsrfTokenValid('delete'.$evenement->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $evenement->getId(), $request->request->get('_token'))) {
             $em->remove($evenement);
             $em->flush();
             $this->addFlash('success', 'Événement supprimé.');
@@ -98,5 +93,4 @@ class EvenementController extends AbstractController
 
         return $this->redirectToRoute('evenement_index');
     }
-
 }

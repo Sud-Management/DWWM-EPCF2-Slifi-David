@@ -9,12 +9,17 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class EvenementVoter extends Voter
 {
-    public const EDIT = 'EVENEMENT_EDIT';
+    public const CREATE = 'EVENEMENT_CREATE';
+    public const EDIT   = 'EVENEMENT_EDIT';
     public const DELETE = 'EVENEMENT_DELETE';
 
     protected function supports(string $attribute, $subject): bool
     {
-        return in_array($attribute, [self::EDIT, self::DELETE])
+        if ($attribute === self::CREATE) {
+            return true;
+        }
+
+        return in_array($attribute, [self::EDIT, self::DELETE], true)
             && $subject instanceof Evenement;
     }
 
@@ -23,20 +28,26 @@ class EvenementVoter extends Voter
         $user = $token->getUser();
 
         if (!$user instanceof User) {
-            return false;
+            return false; 
         }
 
-        /** @var Evenement $evenement */
-        $evenement = $subject;
 
-        
-        if (in_array('ROLE_ADMIN', $user->getRoles())) {
+        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
             return true;
         }
 
         
+        if (in_array('ROLE_USER', $user->getRoles(), true) && !in_array('ROLE_ORGA', $user->getRoles(), true)) {
+            return false;
+        }
+
         return match ($attribute) {
-            self::EDIT, self::DELETE => $evenement->getOrganisateur() === $user,
+            self::CREATE => in_array('ROLE_ORGA', $user->getRoles(), true),
+            self::EDIT, self::DELETE => 
+                in_array('ROLE_ORGA', $user->getRoles(), true) 
+                && $subject instanceof Evenement
+                && $subject->getOrganisateur() 
+                && $subject->getOrganisateur()->getId() === $user->getId(),
             default => false,
         };
     }

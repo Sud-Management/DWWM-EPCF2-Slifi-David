@@ -1,24 +1,53 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des événements{% endblock %}
+{% block title %}Liste des Événements{% endblock %}
 
 {% block body %}
-    <h1>Événements disponibles</h1>
+<h1>Liste des Événements</h1>
 
-    {% if evenements is empty %}
-        <p>Aucun événement pour le moment.</p>
+{% if is_granted('EVENEMENT_CREATE') %}
+    <a href="{{ path('evenement_new') }}" class="btn btn-success mb-3">Créer un événement</a>
+{% endif %}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Titre</th>
+            <th>Date début</th>
+            <th>Date fin</th>
+            <th>Lieu</th>
+            <th>Organisateur</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for evenement in evenements %}
+        <tr>
+            <td>{{ evenement.titre }}</td>
+            <td>{{ evenement.dateDebut ? evenement.dateDebut|date('d/m/Y H:i') : 'Non défini' }}</td>
+            <td>{{ evenement.dateFin ? evenement.dateFin|date('d/m/Y H:i') : 'Non défini' }}</td>
+            <td>{{ evenement.lieu ? evenement.lieu.nom : 'Aucun' }}</td>
+            <td>{{ evenement.organisateur ? evenement.organisateur.email : 'Inconnu' }}</td>
+            <td>
+                <a href="{{ path('evenement_show', {'id': evenement.id}) }}" class="btn btn-info btn-sm">Voir</a>
+
+                {% if is_granted('EVENEMENT_EDIT', evenement) %}
+                    <a href="{{ path('evenement_edit', {'id': evenement.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                {% endif %}
+
+                {% if is_granted('EVENEMENT_DELETE', evenement) %}
+                    <form method="post" action="{{ path('evenement_delete', {'id': evenement.id}) }}" style="display:inline;" onsubmit="return confirm('Confirmer la suppression ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ evenement.id) }}">
+                        <button class="btn btn-danger btn-sm">Supprimer</button>
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
     {% else %}
-        <div class="event-list">
-            {% for evenement in evenements %}
-                <div class="event-card">
-                    <h2>{{ evenement.titre }}</h2>
-                    <p><strong>Date :</strong> du {{ evenement.dateDebut|date('d/m/Y H:i') }} au {{ evenement.dateFin|date('d/m/Y H:i') }}</p>
-                    <p><strong>Lieu :</strong> {{ evenement.lieu.nom ?? 'Non précisé' }}</p>
-                    <p><strong>Catégorie :</strong> {{ evenement.categorie.nom ?? 'Aucune' }}</p>
-                    <p>{{ evenement.description|u.truncate(150, '...') }}</p>
-                    <a href="{{ path('evenement_show', {'id': evenement.id}) }}" class="btn btn-primary">Voir l'événement</a>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+        <tr>
+            <td colspan="6" class="text-center">Aucun événement trouvé</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

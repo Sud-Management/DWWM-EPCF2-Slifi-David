@@ -10,7 +10,7 @@
                 <li><a href="{{ path('evenement_index') }}">Événements</a></li>
 
                 {% if app.user %}
-                    <li><a href="{{ path('app_profile') }}">Mon profil</a></li>
+                    <li><a href="{{ path('app_profile_edit') }}">Mon profil</a></li>
 
                     {% if 'ROLE_ADMIN' in app.user.roles or 'ROLE_ORGA' in app.user.roles %}
                         <li><a href="{{ path('evenement_new') }}">Créer un événement</a></li>
