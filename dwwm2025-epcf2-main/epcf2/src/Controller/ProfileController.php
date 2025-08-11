@@ -46,4 +46,17 @@ class ProfileController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/profile', name: 'profile')]
+    public function index(EntityManagerInterface $em): Response
+    {
+        $user = $this->getUser();
+        $participations = $em->getRepository(\App\Entity\Participation::class)
+            ->findBy(['utilisateur' => $user]);
+
+        return $this->render('profile/index.html.twig', [
+            'user' => $user,
+            'participations' => $participations,
+        ]);
+    }
 }

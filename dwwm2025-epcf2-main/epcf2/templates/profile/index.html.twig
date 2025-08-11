@@ -1,0 +1,15 @@
+<h2>Mes participations</h2>
+<ul>
+    {% for participation in participations %}
+        <li>
+            Événement : {{ participation.evenement.titre }}<br>
+            Statut : {{ participation.statut }}
+        </li>
+    {% else %}
+        <li>Aucune participation</li>
+    {% endfor %}
+</ul>
+
+<a href="{{ path('profile_edit') }}" class="button-primary" style="margin-bottom: 1.5rem; display: inline-block;">
+    Modifier mon profil
+</a>
