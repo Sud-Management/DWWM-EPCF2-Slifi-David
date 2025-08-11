@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Controller;
 
 use App\Entity\Evenement;
@@ -23,7 +24,6 @@ class EvenementController extends AbstractController
 
         $evenements = $evenementRepository->findByFilters($categorie, $lieu, $date, $search);
 
-        
         $categories = $em->getRepository(\App\Entity\Categorie::class)->findAll();
         $lieux = $em->getRepository(\App\Entity\Lieu::class)->findAll();
 
@@ -48,7 +48,6 @@ class EvenementController extends AbstractController
             $evenement->setOrganisateur($this->getUser());
             $evenement->setDateCreation(new \DateTimeImmutable());
 
-            // Pour chaque média ajouté
             foreach ($form->get('medias') as $mediaForm) {
                 $file = $mediaForm->get('file')->getData();
                 if ($file) {
@@ -56,7 +55,8 @@ class EvenementController extends AbstractController
                     $file->move($this->getParameter('media_directory'), $filename);
 
                     $media = $mediaForm->getData();
-                    $media->setFilename($filename);
+                    $media->setUrl($filename);
+                    $media->setType($file->getMimeType());
                     $media->setEvenement($evenement);
                     $em->persist($media);
                 }
@@ -94,7 +94,6 @@ class EvenementController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Pour chaque média ajouté
             foreach ($form->get('medias') as $mediaForm) {
                 $file = $mediaForm->get('file')->getData();
                 if ($file) {
@@ -102,7 +101,8 @@ class EvenementController extends AbstractController
                     $file->move($this->getParameter('media_directory'), $filename);
 
                     $media = $mediaForm->getData();
-                    $media->setFilename($filename);
+                    $media->setUrl($filename);
+                    $media->setType($file->getMimeType());
                     $media->setEvenement($evenement);
                     $em->persist($media);
                 }

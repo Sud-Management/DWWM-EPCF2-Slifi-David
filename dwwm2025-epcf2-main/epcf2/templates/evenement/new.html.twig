@@ -2,6 +2,11 @@
 
 {% block title %}Créer un Événement{% endblock %}
 
+{% block stylesheets %}
+ {{ parent() }}
+        <link rel="stylesheet" href="assets/css/style.css" />
+        {% endblock %}
+
 {% block body %}
 <h1>{{ evenement is defined ? 'Modifier un événement' : 'Créer un événement' }}</h1>
 

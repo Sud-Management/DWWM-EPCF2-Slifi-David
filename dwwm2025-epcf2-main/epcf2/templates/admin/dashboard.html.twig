@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Dashboard Administrateur</h1>
+
+    <div class="dashboard-stats" style="margin-bottom:2rem;">
+        <div class="dashboard-stat">
+            <div style="font-size:2rem;">👤</div>
+            <div>{{ nbUsers }}</div>
+            <div>Utilisateurs</div>
+        </div>
+        <div class="dashboard-stat">
+            <div style="font-size:2rem;">📅</div>
+            <div>{{ nbEvents }}</div>
+            <div>Événements</div>
+        </div>
+        <div class="dashboard-stat">
+            <div style="font-size:2rem;">📝</div>
+            <div>{{ nbParticipations }}</div>
+            <div>Participations</div>
+        </div>
+    </div>
+
+    <div class="dashboard-section">
+        <h2>Derniers utilisateurs inscrits</h2>
+        <ul>
+            {% for user in lastUsers %}
+                <li>{{ user.email }}{% if user.roles is defined and 'ROLE_ADMIN' in user.roles %} <span class="event-tag">Admin</span>{% endif %}</li>
+            {% else %}
+                <li>Aucun utilisateur</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="dashboard-section">
+        <h2>Derniers événements créés</h2>
+        <ul>
+            {% for event in lastEvents %}
+                <li>
+                    <span class="event-title">{{ event.titre }}</span>
+                    <span style="color:#888;">({{ event.dateCreation ? event.dateCreation|date('d/m/Y H:i') : 'N/A' }})</span>
+                </li>
+            {% else %}
+                <li>Aucun événement</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

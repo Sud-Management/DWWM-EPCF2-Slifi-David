@@ -14,7 +14,7 @@ class MediaType extends AbstractType
         $builder
             ->add('file', FileType::class, [
                 'label' => 'Fichier média',
-                'mapped' => false, // à gérer dans le contrôleur
+                'mapped' => false, 
                 'required' => false,
             ])
         ;
