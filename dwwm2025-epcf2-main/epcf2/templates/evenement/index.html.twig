@@ -5,6 +5,30 @@
 {% block body %}
 <h1>Liste des Événements</h1>
 
+
+<form method="get" class="mb-4 d-flex flex-wrap gap-2 align-items-end">
+    <input type="text" name="search" placeholder="Recherche par titre ou description" value="{{ app.request.get('search') }}" class="form-control" style="width: 200px;">
+    
+    <select name="categorie" class="form-select" style="width: 180px;">
+        <option value="">Toutes catégories</option>
+        {% for cat in categories %}
+            <option value="{{ cat.id }}" {% if app.request.get('categorie') == cat.id %}selected{% endif %}>{{ cat.nom }}</option>
+        {% endfor %}
+    </select>
+    
+    <select name="lieu" class="form-select" style="width: 180px;">
+        <option value="">Tous lieux</option>
+        {% for l in lieux %}
+            <option value="{{ l.id }}" {% if app.request.get('lieu') == l.id %}selected{% endif %}>{{ l.nom }}</option>
+        {% endfor %}
+    </select>
+    
+    <input type="date" name="date" value="{{ app.request.get('date') }}" class="form-control" style="width: 170px;">
+    
+    <button type="submit" class="btn btn-primary">Filtrer</button>
+    <a href="{{ path('evenement_index') }}" class="btn btn-secondary">Réinitialiser</a>
+</form>
+
 {% if is_granted('EVENEMENT_CREATE') %}
     <a href="{{ path('evenement_new') }}" class="btn btn-success mb-3">Créer un événement</a>
 {% endif %}

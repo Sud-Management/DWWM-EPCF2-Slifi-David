@@ -6,30 +6,6 @@
 
 <h2>Participants</h2>
 
-{# templates/evenement/show.html.twig #}
-
-<h1>{{ evenement.titre }}</h1>
-
-<p>{{ evenement.description }}</p>
-
-<h2>Médias</h2>
-{% if evenement.medias|length > 0 %}
-    <div class="medias">
-        {% for media in evenement.medias %}
-            {% if media.url %}
-                <div style="display:inline-block; margin:6px;">
-                    <img src="{{ media.url }}" alt="Média" style="max-width:300px; display:block;">
-                    {% if media.type %}<small>{{ media.type }}</small>{% endif %}
-                </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-{% else %}
-    <p>Aucun média associé.</p>
-{% endif %}
-
-<h2>Participants</h2>
-
 
 
 
@@ -41,7 +17,18 @@
         {% for participation in evenement.participations %}
             <li>
                 {{ participation.utilisateur.prenom }} {{ participation.utilisateur.nom }} -
-                Statut : {{ participation.statut|capitalize }}
+                Statut :
+                {% if participation.statut == 'acceptée' %}
+                    <span style="color:green;font-weight:bold;">Acceptée</span>
+                {% elseif participation.statut == 'refusée' %}
+                    <span style="color:red;font-weight:bold;">Refusée</span>
+                {% elseif participation.statut == 'en attente' %}
+                    <span style="color:orange;font-weight:bold;">En attente</span>
+                {% elseif participation.statut == 'annulée' %}
+                    <span style="color:gray;">Annulée</span>
+                {% else %}
+                    {{ participation.statut|capitalize }}
+                {% endif %}
 
                 {% if app.user and (app.user == evenement.organisateur or is_granted('ROLE_ADMIN')) and participation.statut == 'en attente' %}
                     <form method="post" action="{{ path('participation_accepter', {id: participation.id}) }}" style="display:inline">
