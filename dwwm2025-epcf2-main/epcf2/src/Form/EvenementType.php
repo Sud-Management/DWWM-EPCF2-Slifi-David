@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use App\Form\MediaType;
 
 class EvenementType extends AbstractType
 {
@@ -54,8 +56,16 @@ class EvenementType extends AbstractType
                 'label' => 'Lieu',
                 'placeholder' => 'Choisir un lieu',
                 'required' => false,
+            ])
+            ->add('medias', CollectionType::class, [
+                'entry_type' => MediaType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'label' => 'Médias associés',
+                'required' => false,
+                'prototype' => true,
             ]);
-           
     }
 
     public function configureOptions(OptionsResolver $resolver)
